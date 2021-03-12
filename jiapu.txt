@@ -1,0 +1,45 @@
+aunt(X,Y) :-
+  parent(Z,Y), sister(X,Z).
+
+sibling(X, Y) :-
+      parent(Z, X),
+      parent(Z, Y),
+      X \= Y.
+
+sister(X, Y) :-
+      sibling(X, Y),
+      female(X).
+
+brother(X, Y) :-
+      sibling(X, Y),
+      male(X).
+
+parent(Z,Y) :- father(Z,Y).
+parent(Z,Y) :- mother(Z,Y).
+
+grandparent(C,D) :- parent(C,E), parent(E,D).
+
+
+
+male(a).
+male(b).
+male(c).
+male(d).
+male(e).
+female(f).
+female(g).
+female(h).
+mother(f,g).
+mother(f,c).
+mother(g,h).
+mother(g,e).
+father(a,g).
+father(a,c).
+father(b,h).
+father(b,e).
+father(c,d).
+sibling(b,c).
+sibling(g,b).
+sibling(h,e).
+sibling(h,d).
+sibling(e,d).

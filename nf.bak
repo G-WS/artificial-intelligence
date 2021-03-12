@@ -1,0 +1,54 @@
+move(1,0,0,0). % 元组保存渡河方式
+move(1,1,0,0). % 分别表示农夫 狼 羊 白菜
+move(1,0,1,0). % 只有农夫会开船 故每种方式农夫都要渡河
+move(1,0,0,1). % 农夫渡河可以啥也不带 也可以只带一个物品
+
+safe((F,W,S,C)):- %某个岸边安全的状态
+    (F=:=1); % 农夫只要在 总是安全的
+    (F=:=0,W=:=1,S=:=0); %农夫不在 狼在 则羊不能在 白菜可在可不在
+    (F=:=0,W=:=0,S=:=1,C=:=0); %农夫不在 狼不在 羊在 白菜不能在
+    (F=:=0,W=:=0,S=:=0). %均不在 或只有白菜在
+
+allSafe((L,R,_)):- % 河岸两边都要安全 _表示不关心的状态 即船的状态不关心
+    safe(L),
+    safe(R).
+aftermove((L,R,Ship),Move,Statu):- %移动之后 两个河岸状态发生改变
+    (Fal,Wol,Shl,Cal)=L, %先将移动前的状态赋值给变量
+    (Far,Wor,Shr,Car)=R,
+    (A,B,C,D)=Move,
+     if_then_else(
+         (Ship=:=0), %根据船的位置 判断 河岸两边的改变情况
+         ( Tl1 is Fal-A, Tl2 is Wol-B, Tl3 is Shl-C, Tl4 is Cal-D,
+           Tr1 is Far+A, Tr2 is Wor+B, Tr3 is Shr+C, Tr4 is Car+D,
+           Statu = ((Tl1,Tl2,Tl3,Tl4),(Tr1,Tr2,Tr3,Tr4),1)
+         ),
+
+         ( Tl1 is Fal+A, Tl2 is Wol+B, Tl3 is Shl+C, Tl4 is Cal+D,
+           Tr1 is Far-A, Tr2 is Wor-B, Tr3 is Shr-C, Tr4 is Car-D,
+           Statu = ((Tl1,Tl2,Tl3,Tl4),(Tr1,Tr2,Tr3,Tr4),0))
+         ).
+valid(Statu,Statu1):-
+    move(F,W,S,C), %某种渡河方式
+    aftermove(Statu,(F,W,S,C),Statu1), %移动之后状态改变
+    allSafe(Statu1). %检测移动后是一个安全的状态
+% 下同 野人和传教士 自己去理解下吧
+first_one(A,X):-
+    append([A],_,X).
+if_then_else(Condition,Then,Else) :- %定义if_then_else的执行逻辑 在下面使用
+   call(Condition) -> call(Then) ; call(Else).
+
+
+last_part(A,X):-
+    first_one(B,X),
+    append([B],A,X).
+show(L):-
+    if_then_else(
+        (length(L,X),X>0),
+        (first_one(A,L) , last_part(B,L) ,write('['),write(A),write(']'),nl,show(B)),
+        fail).
+nfgh(X,Y,L):- % L
+    if_then_else(
+     X=Y,
+    (write('***********************'),nl,show(L),nl),
+    (valid(X,Z), not(member(Z,L)),nfgh(Z,Y,[Z|L]))
+    ).

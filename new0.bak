@@ -1,0 +1,8 @@
+love(nizhen,wangfei).
+love(nizhen,zhouhuimin).
+love(wangfei,liyapeng).
+love(zhouhuimin,nizhen).
+love(liyapeng,wangfei).
+love(liyapeng,zhouhuimin).
+love(liudehua,zhouhuimin).
+lovers(X,Y):-love(X,Y),love(Y,X).

@@ -1,0 +1,32 @@
+move(1,0). /*左面的数字表示牧师的人数，右面的数字表示野人的人数*/
+move(0,1).
+move(0,2).
+move(2,0).
+move(1,1).
+/*if_then_else(Condition,Then,Else);-
+ call(Condition)->call(then);call(Else).
+*/legal((X,Y,_)):- %x表示左岸状态，Y表示右岸的状态
+legal_temp(X), %判断两岸是否合法
+legal_temp(Y).
+legal_temp((X,Y)):- (X=:=0,Y>=0,!);(Y:=0,X>=0,!);(X>=Y,X>=0,Y>=0).
+change((X,Y,Q),Move,Statu):- (A,B)=X,(C,D)=Y,(E,F)=Move,
+							if_then_else(
+   										Q=:=0,
+    									(C1 is C+E,D1 is D+F,A1 is A-E,B1 is B-F,Statu=((A1,B1),(C1,D1),1)),
+ 									    (C1 is C-E,D1 is D-F,A1 is A+E,B1 is B+F,Statu=((A1,B1),(C1,D1),0))
+   										 ).
+append([],L,L).
+append([H|T],L2,[H|Tn]):-append(T,L2,Tn).
+valid(Statu,Statu1):- %两种状态互通可走
+move(X,Y),change(Statu,(X,Y),Statu1),legal(Statu1).
+first_one(A,X):- append([A],_,X). %A等于表X的第一个元素
+last_part(A,X):- fitst_one(B,X),append([B],A,X). %得到A等于表x除第一个元素的后半部分表
+show(L):- if_then_else((length(L,X),X>0),(first_one(A,L),last_part(B,L),write('['),write(A),write(']'),nl,show(B)),fail).
+member(X,[X|_]).
+member(X,[_|T]):-
+      member(X,T).
+if_then_else(Condition,Then,Else) :- %定义if_then_else的执行逻辑 在下面使用
+   call(Condition) -> call(Then) ; call(Else).
+solution(X,Y,L):-
+write('123'),write(X),write(Y),
+if_then_else(X=Y,(write('==============='),nl,show(L),nl),(valid(X,Z),not(member(Z,L)),solution(Z,Y,[Z|L]))).
