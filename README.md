@@ -1,0 +1,2 @@
+# artificial-intelligence
+使用prolog和java实现人工智能部分算法
